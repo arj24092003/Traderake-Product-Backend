@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
+    'social_django',
     'accounts',
 ]
 
@@ -76,7 +77,28 @@ DJOSER = {
         'user_create': 'accounts.serializers.CustomUserCreateSerializer',
         'current_user': 'accounts.serializers.UserSerializer',
     },
+    'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.environ.get("SOCIAL_AUTH_ALLOWED_REDIRECT_URIS", "http://localhost:3000/auth/google/callback").split(","),
 }
+
+# Social Auth Settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',  # Link accounts if email matches
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'accounts.pipeline.set_email_verified',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,6 +109,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_STATE = True
+
 
 ROOT_URLCONF = 'traderake_product_backend.urls'
 
@@ -110,6 +134,7 @@ WSGI_APPLICATION = 'traderake_product_backend.wsgi.application'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 AUTHENTICATION_BACKENDS = [
     'accounts.backends.MultiFieldAuthBackend',
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -149,6 +174,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Email Configuration - Default to console backend (can be overridden)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

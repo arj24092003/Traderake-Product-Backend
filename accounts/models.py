@@ -5,8 +5,8 @@ import random
 import string
 
 class CustomUser(AbstractUser):
-    country_code = models.CharField(max_length=5, blank=False, null=False)
-    phone_number = models.CharField(max_length=20, unique=True, null=False, blank=False)
+    country_code = models.CharField(max_length=5, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True, null=False, blank=False)
     whatsapp_opt_in = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)

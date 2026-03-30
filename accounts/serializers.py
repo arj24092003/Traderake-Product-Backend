@@ -32,7 +32,7 @@ class LoginSerializer(serializers.Serializer):
                 return user
             raise serializers.ValidationError("Incorrect Credentials")
         elif otp:
-            user = authenticate(identifier=identifier, otp=otp)
+            user = authenticate(identifier=identifier, otp=otp) 
             if user:
                 # If they successfully logged in with an OTP sent to their phone,
                 # we can safely assume their phone is verified.
